@@ -32,14 +32,12 @@ int main(int argc, char * argv[]) {
     fread(position_file, sizeof(uint32_t), 1, image);
 
 
-    int body_position_file = position_file[0] - 14;
-    uint32_t *skip_info_file = (uint32_t*) malloc(sizeof(uint32_t)*body_position_file);
-    fread(skip_info_file, sizeof(uint32_t) * body_position_file, 1, image);
+    //int body_position_file = (position_file[0] - 14)/2;
+    //uint32_t *skip_info_file = (uint32_t*) malloc(sizeof(uint32_t)*body_position_file);
+    //fread(skip_info_file, sizeof(uint32_t) * body_position_file, 1, image);
 
-    printf("body position file: %d\n", body_position_file);
+    //printf("body position file: %d\n", body_position_file);
 
-    int body_size_file = (size_file[0] - (position_file[0]))/2;
-    //uint16_t *body_file = (uint16_t*) malloc(sizeof(uint16_t)*body_size_file);
     uint16_t *one_file = (uint16_t*) malloc(sizeof(uint16_t));
 
     char * save_path = argv[2];
@@ -49,7 +47,10 @@ int main(int argc, char * argv[]) {
 
     fprintf(save_image, "#include <stdio.h>\n");
     fprintf(save_image, "\nuint16_t my_image[%d] = {\n", *size_file);
-    for (int i = 0; i < (size_file[0]/2) - position_file[0]; i++) {
+    fseek(image, 0, SEEK_END);
+    for (int i = 0; i < size_file[0]/2; i++) {
+        //if (fread(one_file, sizeof(uint16_t), 1, image) == 4) {
+        fseek(image, -2 * sizeof(uint16_t), SEEK_CUR);
         if (fread(one_file, sizeof(uint16_t), 1, image) == 4) {
             break;
         }
@@ -64,7 +65,7 @@ int main(int argc, char * argv[]) {
     free(header_file);
     free(zero_file);
     free(position_file);
-    free(skip_info_file);
+    //free(skip_info_file);
     free(one_file);
 
     fclose(save_image);
