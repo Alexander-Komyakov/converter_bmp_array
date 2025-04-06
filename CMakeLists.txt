@@ -7,6 +7,21 @@ endif()
 
 project(ImageConverter LANGUAGES C)  # Убрали VERSION из project()
 
+# Функция для проверки и установки пакетов
+function(ubuntu_install_package PKG_NAME)
+    execute_process(
+        COMMAND bash -c "dpkg -l | grep -q ${PKG_NAME} || (sudo apt-get update && sudo apt-get install -y ${PKG_NAME})"
+        RESULT_VARIABLE INSTALL_RESULT
+    )
+    if(NOT INSTALL_RESULT EQUAL 0)
+        message(FATAL_ERROR "Failed to install ${PKG_NAME}")
+    endif()
+endfunction()
+
+# Проверяем и устанавливаем зависимости
+ubuntu_install_package("libgif-dev")
+ubuntu_install_package("libjpeg-dev")
+
 # Включаем подпроекты
 add_subdirectory(gif_converter)
 add_subdirectory(jpg_converter)
@@ -28,19 +43,5 @@ list(GET VERSION_LIST 2 CPACK_DEBIAN_PACKAGE_VERSION_PATCH)
 
 # Зависимости для пакета
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libgif-dev, libjpeg-dev")
-
-# Настройка автоматической установки
-install(CODE "
-    message(STATUS \"Устанавливаем DEB пакет...\")
-    execute_process(
-        COMMAND dpkg -i image-converter_${PACKAGE_VERSION}_*.deb
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        RESULT_VARIABLE INSTALL_RESULT
-    )
-    if(NOT INSTALL_RESULT EQUAL 0)
-        message(FATAL_ERROR \"Ошибка установки пакета!\")
-    endif()
-    message(STATUS \"Установка завершена успешно\")
-")
 
 include(CPack)
