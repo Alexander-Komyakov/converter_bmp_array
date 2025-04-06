@@ -10,7 +10,7 @@ project(ImageConverter LANGUAGES C)  # Убрали VERSION из project()
 # Функция для проверки и установки пакетов
 function(ubuntu_install_package PKG_NAME)
     execute_process(
-        COMMAND bash -c "dpkg -l | grep -q ${PKG_NAME} || (sudo apt-get update && sudo apt-get install -y ${PKG_NAME})"
+        COMMAND bash -c "dpkg -l | grep -q ${PKG_NAME} || (apt-get update && sudo apt-get install -y ${PKG_NAME})"
         RESULT_VARIABLE INSTALL_RESULT
     )
     if(NOT INSTALL_RESULT EQUAL 0)
@@ -19,8 +19,10 @@ function(ubuntu_install_package PKG_NAME)
 endfunction()
 
 # Проверяем и устанавливаем зависимости
-ubuntu_install_package("libgif-dev")
-ubuntu_install_package("libjpeg-dev")
+if(DEFINED INSTALL_REQUIREMENTS_DEB)
+    ubuntu_install_package("libgif-dev")
+    ubuntu_install_package("libjpeg-dev")
+endif()
 
 # Включаем подпроекты
 add_subdirectory(gif_converter)
