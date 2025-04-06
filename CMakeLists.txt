@@ -10,7 +10,7 @@ project(ImageConverter LANGUAGES C)  # Убрали VERSION из project()
 # Функция для проверки и установки пакетов
 function(ubuntu_install_package PKG_NAME)
     execute_process(
-        COMMAND bash -c "dpkg -l | grep -q ${PKG_NAME} || (apt-get update && sudo apt-get install -y ${PKG_NAME})"
+        COMMAND bash -c "dpkg -l | grep -q ${PKG_NAME} || (apt-get update && apt-get install -y ${PKG_NAME})"
         RESULT_VARIABLE INSTALL_RESULT
     )
     if(NOT INSTALL_RESULT EQUAL 0)
