@@ -26,4 +26,21 @@ list(GET VERSION_LIST 0 CPACK_DEBIAN_PACKAGE_VERSION_MAJOR)
 list(GET VERSION_LIST 1 CPACK_DEBIAN_PACKAGE_VERSION_MINOR)
 list(GET VERSION_LIST 2 CPACK_DEBIAN_PACKAGE_VERSION_PATCH)
 
+# Зависимости для пакета
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libgif-dev, libjpeg-dev")
+
+# Настройка автоматической установки
+install(CODE "
+    message(STATUS \"Устанавливаем DEB пакет...\")
+    execute_process(
+        COMMAND dpkg -i image-converter_${PACKAGE_VERSION}_*.deb
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        RESULT_VARIABLE INSTALL_RESULT
+    )
+    if(NOT INSTALL_RESULT EQUAL 0)
+        message(FATAL_ERROR \"Ошибка установки пакета!\")
+    endif()
+    message(STATUS \"Установка завершена успешно\")
+")
+
 include(CPack)
