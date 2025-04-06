@@ -3,7 +3,7 @@
 wget https://raw.githubusercontent.com/nothings/stb/master/stb_image.h
 wget https://raw.githubusercontent.com/nothings/stb/master/stb_image_write.h
 # Компиляция программы
-gcc -o converter converter.c -lm
+gcc -o jpg_converter jpg_converter.c -lm
 # Запускаем программу
-./converter input.jpg output.c 320x240
+./jpg_converter input.jpg output.c 320x240
 # номер коммита для использования - f62ae602fa83aefc605f5aa335519c437a573167
