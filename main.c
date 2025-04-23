@@ -58,7 +58,7 @@ int main(int argc, char * argv[]) {
             fprintf(save_image, "\n");
         }
         uint16_t swapest_bits = (one_file[0] << 8) | (one_file[0] >> 8);
-        fprintf(save_image, "0x%X, ", swapest_bits);
+        fprintf(save_image, "0x%04X, ", swapest_bits);
     }
     fprintf(save_image, "};\n");
     fclose(image);
