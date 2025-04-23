@@ -97,7 +97,7 @@ int main(int argc, char * argv[]) {
     fprintf(save_image, "    .y = 0,\n");
     fprintf(save_image, "    .width = %d,\n", width);
     fprintf(save_image, "    .height = %d,\n", height);
-    fprintf(save_image, "    .size_image = %d,\n", width * height * 2); // 2 байта на пиксель
+    fprintf(save_image, "    .size_image = %d,\n", width * height);
     fprintf(save_image, "    .pixels = image_%s_pixels\n", name_no_extension);
     fprintf(save_image, "};\n");
 
