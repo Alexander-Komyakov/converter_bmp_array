@@ -51,10 +51,6 @@ int main(int argc, char * argv[]) {
     printf("Image width: %d pixels\n", width);
     printf("Image height: %d pixels\n", height);
 
-    // Остальная часть вашего кода...
-    // В местах, где вы используете size_file[0], теперь можно использовать file_size
-    // И при выводе в файл вы можете использовать width и height
-
     char* save_path = argv[2];
     printf("%s\n", save_path);
 
@@ -72,23 +68,29 @@ int main(int argc, char * argv[]) {
     char* name_no_extension = strndup(save_path, strlen(save_path));
     name_no_extension[strlen(name_no_extension)-2] = '\0';
     
-    // Используем правильный размер массива (ширина * высота * размер пикселя)
-    // Для 16-битных BMP это будет width * height
     fprintf(save_image, "\nconst uint16_t image_%s_pixels[%d] = {", name_no_extension, width * height);
+    
+    // Рассчитываем выравнивание строк
+    int row_size = width * 2; // 2 байта на пиксель
+    int padding = (4 - (row_size % 4)) % 4;
     
     // Перемещаемся к началу данных пикселей
     fseek(image, pixel_offset, SEEK_SET);
     
     uint16_t pixel;
-    for (int i = 0; i < width * height; i++) {
-        if (fread(&pixel, sizeof(uint16_t), 1, image) != 1) {
-            break;
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            if (fread(&pixel, sizeof(uint16_t), 1, image) != 1) {
+                break;
+            }
+            if ((y * width + x) % 10 == 0) {
+                fprintf(save_image, "\n");
+            }
+            uint16_t swapped_pixel = (pixel << 8) | (pixel >> 8);
+            fprintf(save_image, "0x%04X, ", swapped_pixel);
         }
-        if (i % 10 == 0) {
-            fprintf(save_image, "\n");
-        }
-        uint16_t swapped_pixel = (pixel << 8) | (pixel >> 8);
-        fprintf(save_image, "0x%04X, ", swapped_pixel);
+        // Пропускаем байты выравнивания
+        fseek(image, padding, SEEK_CUR);
     }
     
     fprintf(save_image, "\n};\n");
