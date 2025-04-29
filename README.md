@@ -17,6 +17,6 @@
 4. Добавляем в Cmake новый файл .c:
     - `vim ~/esp-project/main/CMakeLists.txt`
     - Добавляем SRCS "aboba.c"
-5. Добавляем в display.h `#include "aboba.c"`
+5. Добавляем в display.h `#include "aboba.h"`
 
 Картинка добавлена!
