@@ -77,21 +77,38 @@ int main(int argc, char * argv[]) {
     // Перемещаемся к началу данных пикселей
     fseek(image, pixel_offset, SEEK_SET);
     
-    uint16_t pixel;
-    for (int y = 0; y < height; y++) {
+    // === ИСПРАВЛЕННАЯ ЧАСТЬ ===
+    uint16_t pixel; // Добавлено объявление переменной
+    uint16_t* pixels = malloc(width * height * sizeof(uint16_t));
+    if (!pixels) {
+        perror("Memory allocation failed");
+        fclose(image);
+        fclose(save_image);
+        return 1;
+    }
+
+    // Читаем строки в обратном порядке (снизу вверх)
+    for (int y = height - 1; y >= 0; y--) {
         for (int x = 0; x < width; x++) {
             if (fread(&pixel, sizeof(uint16_t), 1, image) != 1) {
                 break;
             }
-            if ((y * width + x) % 10 == 0) {
-                fprintf(save_image, "\n");
-            }
             uint16_t swapped_pixel = (pixel << 8) | (pixel >> 8);
-            fprintf(save_image, "0x%04X, ", swapped_pixel);
+            pixels[y * width + x] = swapped_pixel;
         }
         // Пропускаем байты выравнивания
         fseek(image, padding, SEEK_CUR);
     }
+
+    // Записываем пиксели в файл
+    for (int i = 0; i < width * height; i++) {
+        if (i % 10 == 0) {
+            fprintf(save_image, "\n");
+        }
+        fprintf(save_image, "0x%04X, ", pixels[i]);
+    }
+    free(pixels);
+    // === КОНЕЦ ИСПРАВЛЕННОЙ ЧАСТИ ===
     
     fprintf(save_image, "\n};\n");
     fprintf(save_image, "Image image_%s = {\n", name_no_extension);
