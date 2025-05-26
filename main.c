@@ -131,7 +131,7 @@ int main(int argc, char * argv[]) {
         return 1;
     }
     
-    fprintf(image_header, "#include \"image_structure.h\"\n\n");
+    fprintf(image_header, "#include \"core/image_structure.h\"\n\n");
     fprintf(image_header, "extern const uint16_t image_%s_pixels[%d];\n", name_no_extension, width * height);
     fprintf(image_header, "extern Image image_%s;\n", name_no_extension);
 
